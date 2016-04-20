@@ -37,6 +37,6 @@ html, body, #cesiumContainer {
 	float: left;
 }
 
-.control {
+.license, .control {
 	clear: left;
 }

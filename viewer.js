@@ -52,28 +52,74 @@ class Globe {
 		this.viewer = new Cesium.Viewer("cesiumContainer");
 		this.source = new Cesium.CustomDataSource("epicenters");
 		this.viewer.dataSources.add(this.source);
+		this._typeToShow = "depth";
 	}
 
-	addEarthquake(longitude, latitude, height, description) {
-		const color = Cesium.Color.fromHsl((1 - height) * 0.6, 1.0, 0.5);
+	addEarthquake(longitude, latitude, depth, magnitude) {
+		function getColor(value, max) {
+			return new Cesium.ColorMaterialProperty(
+				Cesium.Color.fromHsl((1 - value / max) * 0.6, 1.0, 0.5));
+		}
 
-		const surfacePosition = Cesium.Cartesian3.fromDegrees(longitude, latitude, 0);
-		const heightPosition = Cesium.Cartesian3.fromDegrees(longitude, latitude, height * 65536);
+		function getPosition(height) {
+			return Cesium.Cartesian3.fromDegrees(
+				longitude, latitude, height);
+		}
 
-		const polyline = new Cesium.PolylineGraphics();
-		polyline.material = new Cesium.ColorMaterialProperty(color);
-		polyline.width = new Cesium.ConstantProperty(2);
-		polyline.followSurface = new Cesium.ConstantProperty(false);
-		polyline.positions = new Cesium.ConstantProperty([surfacePosition, heightPosition]);
+		const surfacePosition = getPosition(0);
 
-		const entity = new Cesium.Entity({
-			id: this.source.entities.values.length + ": " + description,
-			show: true,
-			polyline: polyline,
-			seriesName: "Magnitude"
-		});
+		const width = new Cesium.ConstantProperty(2);
+		const followSurface = new Cesium.ConstantProperty(false);
+		const entities = this.source.entities;
+		const description = (entities.values.length - 1) / 2
+			+ ": M" + magnitude;
+		const typeToShow = this._typeToShow;
 
-		this.source.entities.add(entity);
+		function addPolyline(type, color, surface, top) {
+			const polyline = new Cesium.PolylineGraphics();
+			polyline.material = color;
+			polyline.width = width;
+			polyline.followSurface = followSurface;
+			polyline.positions = new Cesium.ConstantProperty([surface, top]);
+
+			const entity = new Cesium.Entity({
+				id: description + " (" + type + ")",
+				show: type == typeToShow,
+				polyline: polyline,
+				type: type
+			});
+
+			entities.add(entity);
+		}
+
+		if (depth > 0) {
+			const depthColor = getColor(Math.log(depth), 2);
+			const depthPosition = getPosition(depth * 1000);
+
+			addPolyline("depth", depthColor,
+				surfacePosition, depthPosition);
+		}
+
+		const magnitudeColor = getColor(magnitude, 8);
+		const magnitudePosition = getPosition(magnitude * 65536);
+		addPolyline("magnitude", magnitudeColor,
+			surfacePosition, magnitudePosition);
+	}
+
+	get typeToShow() {
+		return this._typeToShow;
+	}
+
+	set typeToShow(type) {
+		this._typeToShow = type;
+
+		const entities = this.source.entities;
+		entities.suspendEvents();
+		for (let index = 0; index < entities.values.length; index++) {
+			const entity = entities.values[index];
+			entity.show = entity.type == type;
+		}
+		entities.resumeEvents();
 	}
 }
 
@@ -154,9 +200,9 @@ const globe = new Globe();
 const parserEventHandler = new ParserEventHandler(function(record) {
 	const latitude = parseFloat(record[6]);
 	const longitude = parseFloat(record[7]);
+	const depth = parseFloat(record[8]);
 	const magnitude = parseFloat(record[9]);
-	const height = magnitude / 8;
-	globe.addEarthquake(longitude, latitude, height, "M" + magnitude);
+	globe.addEarthquake(longitude, latitude, depth, magnitude);
 });
 
 const htmlparser2 = require("htmlparser2");
@@ -172,6 +218,14 @@ downloader.download(function(response) {
 		parser.end();
 	});
 });
+
+document.getElementById("magnitude").onclick = function() {
+	globe.typeToShow = "magnitude";
+}
+
+document.getElementById("depth").onclick = function() {
+	globe.typeToShow = "depth";
+}
 
 const shell = require('electron').shell;
 document.getElementById("source").onclick = function() {
