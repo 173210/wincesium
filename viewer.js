@@ -48,6 +48,7 @@ class Downloader {
 
 class Globe {
 	constructor() {
+		Cesium.BingMapsApi.defaultKey = BING_KEY;
 		this.viewer = new Cesium.Viewer("cesiumContainer");
 		this.source = new Cesium.CustomDataSource("epicenters");
 		this.viewer.dataSources.add(this.source);

@@ -10,6 +10,10 @@ out/Cesium: node_modules/cesium/Build/Cesium | out
 out/node_modules: | out
 	ln -s ../node_modules $@
 
+out/viewer.js: viewer.js
+	@echo 'sed s/BING_KEY/\"$$(BING_KEY)\"/ $< > $@'
+	@sed s/BING_KEY/\"$(BING_KEY)\"/ $< > $@
+
 out/%: %
 	cp -Rf $< $@
 
