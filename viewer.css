@@ -21,7 +21,7 @@ html, body, #cesiumContainer {
 	overflow: hidden;
 }
 
-.header {
+.widget {
 	position: fixed;
 	left: 0px;
 	top: 0px;
@@ -31,4 +31,8 @@ html, body, #cesiumContainer {
 
 .logo {
 	float: left;
+}
+
+.control {
+	clear: left;
 }
