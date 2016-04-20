@@ -4,8 +4,7 @@
   "description": "Map statistics provided by Institute of Sesimology and Volcanology, Faculty of Sciences, Kyushu University",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "pack": "electron-packager . '--app-copyright=Copyright © 173210 <root.3.173210@live.com>' --app-version=0.0.0 --app-category-type=public.app-category.productivity '--version-string.FileDescription=九州大学大学院理学研究院 地震火山観測研究センター 地震データを地図上に表示するツール' --version-string.OriginalFileName=wincesium.exe --version-string.ProductName=WinCesium --version-string.InternalName=wincesium"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "173210",
   "license": "AGPL-3.0",

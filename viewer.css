@@ -13,7 +13,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-@import url(node_modules/cesium/Build/Cesium/Widgets/widgets.css);
+@import url(Cesium/Widgets/widgets.css);
 html, body, #cesiumContainer {
 	height: 100%;
 	margin: 0;
