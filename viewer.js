@@ -171,3 +171,8 @@ downloader.download(function(response) {
 		parser.end();
 	});
 });
+
+const shell = require('electron').shell;
+document.getElementById("source").onclick = function() {
+	shell.openExternal("http://kyupub.sevo.kyushu-u.ac.jp/harvest/");
+}

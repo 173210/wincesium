@@ -25,7 +25,11 @@ html, body, #cesiumContainer {
 	position: fixed;
 	left: 0px;
 	top: 0px;
+}
+
+.header, .header a {
 	color: white;
+	text-decoration: none;
 	text-shadow: 0 0 2px #000000;
 }
 
