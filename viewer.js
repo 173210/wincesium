@@ -58,6 +58,8 @@ class Globe {
 	constructor() {
 		Cesium.BingMapsApi.defaultKey = BING_KEY;
 		this.viewer = new Cesium.Viewer("cesiumContainer");
+		this.viewer.camera.flyTo({ destination:
+			Cesium.Cartesian3.fromDegrees(131, 33, 1048576) });
 		this.source = new Cesium.CustomDataSource("epicenters");
 		this.viewer.dataSources.add(this.source);
 		this._typeToShow = "depth";
