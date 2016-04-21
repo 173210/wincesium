@@ -21,7 +21,11 @@ class Downloader {
 		this.querystring = require("querystring");
 	}
 
-	download(start, end, callback) {
+	download(start, end,
+		magnitudeMinimum, magnitudeMaximum,
+		depthMinimum, depthMaximum,
+		callback)
+	{
 		const body = this.querystring.stringify({
 			"DB": "dat", "ACTION": "DOEQINFO", "ID": "GUEST",
 
@@ -33,8 +37,8 @@ class Downloader {
 			"DY2": end.getDate(), "HR2": end.getHours(),
 			"MI2": end.getMinutes(),
 
-			"MAG1": "1.0", "MAG2": "9.9",
-			"DEP1": "-10.0", "DEP2": "700.0"
+			"MAG1": magnitudeMinimum, "MAG2": magnitudeMaximum,
+			"DEP1": depthMinimum, "DEP2": depthMaximum
 		});
 
 		const request = this.http.request({
@@ -226,15 +230,24 @@ function initializeData(start, end) {
 
 	const parser = new htmlparser2.Parser(parserEventHandler.handlers);
 
-	downloader.download(start, end, function(response) {
-		response.on("data", function(chunk) {
-			parser.write(String.fromCharCode.apply(null, chunk));
-		});
+	const magnitudeMinimum = document.getElementById("magnitude-minimum").value;
+	const magnitudeMaximum = document.getElementById("magnitude-maximum").value;
+	const depthMinimum = document.getElementById("depth-minimum").value;
+	const depthMaximum = document.getElementById("depth-maximum").value;
 
-		response.on("end", function() {
-			parser.end();
-		});
-	});
+	downloader.download(start, end,
+		magnitudeMinimum, magnitudeMaximum,
+		depthMinimum, depthMaximum,
+		function(response) {
+			response.on("data", function(chunk) {
+				parser.write(String.fromCharCode.apply(null, chunk));
+			});
+
+			response.on("end", function() {
+				parser.end();
+			});
+		}
+	);
 }
 
 const end = new Date(Date.now());
