@@ -37,6 +37,15 @@ html, body, #cesiumContainer {
 	float: left;
 }
 
-.license, .control {
+.license, .type, .main {
 	clear: left;
+}
+
+.type, .main {
+	background: rgba(42, 42, 42, 0.8);
+	border-radius: 4px;
+	color: white;
+	margin: 4px;
+	padding: 4px;
+	width: fit-content;
 }

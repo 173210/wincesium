@@ -21,12 +21,20 @@ class Downloader {
 		this.querystring = require("querystring");
 	}
 
-	download(callback) {
+	download(start, end, callback) {
 		const body = this.querystring.stringify({
 			"DB": "dat", "ACTION": "DOEQINFO", "ID": "GUEST",
-			"YR1": "2016", "MO1": "04", "DY1": "15", "HR1": "16", "MI1": "26",
-			"YR2": "2016", "MO2": "04", "DY2": "18", "HR2": "16", "MI2": "26",
-			"MAG1": "1.0", "MAG2": "9.9", "DEP1": "-10.0", "DEP2": "700.0"
+
+			"YR1": start.getFullYear(), "MO1": start.getMonth() + 1,
+			"DY1": start.getDate(), "HR1": start.getHours(),
+			"MI1": start.getMinutes(),
+
+			"YR2": end.getFullYear(), "MO2": end.getMonth() + 1,
+			"DY2": end.getDate(), "HR2": end.getHours(),
+			"MI2": end.getMinutes(),
+
+			"MAG1": "1.0", "MAG2": "9.9",
+			"DEP1": "-10.0", "DEP2": "700.0"
 		});
 
 		const request = this.http.request({
@@ -53,6 +61,10 @@ class Globe {
 		this.source = new Cesium.CustomDataSource("epicenters");
 		this.viewer.dataSources.add(this.source);
 		this._typeToShow = "depth";
+	}
+
+	removeAllEarthquake() {
+		this.source.entities.removeAll();
 	}
 
 	addEarthquake(longitude, latitude, depth, magnitude) {
@@ -197,27 +209,43 @@ function ParserEventHandler(callback) {
 }
 
 const globe = new Globe();
-const parserEventHandler = new ParserEventHandler(function(record) {
-	const latitude = parseFloat(record[6]);
-	const longitude = parseFloat(record[7]);
-	const depth = parseFloat(record[8]);
-	const magnitude = parseFloat(record[9]);
-	globe.addEarthquake(longitude, latitude, depth, magnitude);
-});
 
 const htmlparser2 = require("htmlparser2");
-const parser = new htmlparser2.Parser(parserEventHandler.handlers);
 const downloader = new Downloader();
 
-downloader.download(function(response) {
-	response.on("data", function(chunk) {
-		parser.write(String.fromCharCode.apply(null, chunk));
+function initializeData(start, end) {
+	const parserEventHandler = new ParserEventHandler(function(record) {
+		const latitude = parseFloat(record[6]);
+		const longitude = parseFloat(record[7]);
+		const depth = parseFloat(record[8]);
+		const magnitude = parseFloat(record[9]);
+		globe.addEarthquake(longitude, latitude, depth, magnitude);
 	});
 
-	response.on("end", function() {
-		parser.end();
+	const parser = new htmlparser2.Parser(parserEventHandler.handlers);
+
+	downloader.download(start, end, function(response) {
+		response.on("data", function(chunk) {
+			parser.write(String.fromCharCode.apply(null, chunk));
+		});
+
+		response.on("end", function() {
+			parser.end();
+		});
 	});
-});
+}
+
+const end = new Date(Date.now());
+end.setMilliseconds(0);
+end.setSeconds(0);
+const start = new Date(end.getTime());
+start.setDate(start.getDate() - 7);
+initializeData(start, end);
+
+document.getElementById("start-date").valueAsDate = start;
+document.getElementById("start-time").valueAsDate = start;
+document.getElementById("end-date").valueAsDate = end;
+document.getElementById("end-time").valueAsDate = end;
 
 document.getElementById("magnitude").onclick = function() {
 	globe.typeToShow = "magnitude";
@@ -225,6 +253,20 @@ document.getElementById("magnitude").onclick = function() {
 
 document.getElementById("depth").onclick = function() {
 	globe.typeToShow = "depth";
+}
+
+document.getElementById("get").onclick = function() {
+	function getDatetime(date, time) {
+		function getMilliseconds(id) {
+			return document.getElementById(id).valueAsDate.getTime();
+		}
+
+		return new Date(getMilliseconds(date) + getMilliseconds(time));
+	}
+
+	globe.removeAllEarthquake();
+	initializeData(getDatetime("start-date", "start-time"),
+		getDatetime("end-date", "end-time"));
 }
 
 const shell = require('electron').shell;
