@@ -1,6 +1,6 @@
 {
   "name": "wincesium",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Map statistics provided by Institute of Sesimology and Volcanology, Faculty of Sciences, Kyushu University",
   "main": "index.js",
   "scripts": {

@@ -4,7 +4,7 @@ OBJS := Cesium node_modules LICENSE.html index.js package.json	\
 all: $(addprefix out/, $(OBJS))
 
 pack: all
-	electron-packager out --ignore='/node_modules($$|/)' '--app-copyright=Copyright © 173210 <root.3.173210@live.com>' --app-version=0.0.1 --app-category-type=public.app-category.productivity '--version-string.FileDescription=九州大学大学院理学研究院 地震火山観測研究センター 地震データを地図上に表示するツール' --version-string.OriginalFileName=wincesium.exe --version-string.ProductName=WinCesium --version-string.InternalName=wincesium $(PACKERFLAGS)
+	electron-packager out --ignore='/node_modules($$|/)' '--app-copyright=Copyright © 173210 <root.3.173210@live.com>' --app-version=0.0.2 --app-category-type=public.app-category.productivity '--version-string.FileDescription=九州大学大学院理学研究院 地震火山観測研究センター 地震データを地図上に表示するツール' --version-string.OriginalFileName=wincesium.exe --version-string.ProductName=WinCesium --version-string.InternalName=wincesium $(PACKERFLAGS)
 
 out/Cesium: node_modules/cesium/Build/Cesium | out
 	cp -Rf $< $@
