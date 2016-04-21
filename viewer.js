@@ -118,7 +118,7 @@ class Globe {
 				surfacePosition, depthPosition);
 
 			const magnitudeColor = getColor(magnitude, 8);
-			const magnitudePosition = getPosition(magnitude * 65536);
+			const magnitudePosition = getPosition(magnitude * 16384);
 			addPolyline("magnitude", magnitudeColor,
 				surfacePosition, magnitudePosition);
 		}
