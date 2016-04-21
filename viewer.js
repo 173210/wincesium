@@ -89,7 +89,7 @@ class Globe {
 		const width = new Cesium.ConstantProperty(2);
 		const followSurface = new Cesium.ConstantProperty(false);
 		const entities = this.source.entities;
-		const description = (entities.values.length - 1) / 2
+		const description = entities.values.length / 2
 			+ ": M" + magnitude;
 		const typeToShow = this._typeToShow;
 
@@ -116,12 +116,12 @@ class Globe {
 
 			addPolyline("depth", depthColor,
 				surfacePosition, depthPosition);
-		}
 
-		const magnitudeColor = getColor(magnitude, 8);
-		const magnitudePosition = getPosition(magnitude * 65536);
-		addPolyline("magnitude", magnitudeColor,
-			surfacePosition, magnitudePosition);
+			const magnitudeColor = getColor(magnitude, 8);
+			const magnitudePosition = getPosition(magnitude * 65536);
+			addPolyline("magnitude", magnitudeColor,
+				surfacePosition, magnitudePosition);
+		}
 	}
 
 	get typeToShow() {
