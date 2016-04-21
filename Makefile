@@ -1,4 +1,4 @@
-OBJS := Cesium node_modules index.js package.json	\
+OBJS := Cesium node_modules LICENSE.html index.js package.json	\
 	viewer.css viewer.html viewer.js winm1.png
 
 all: $(addprefix out/, $(OBJS))
